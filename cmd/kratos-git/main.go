@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"kratos-git/define"
 	"kratos-git/models"
 	"os"
 
@@ -76,7 +77,11 @@ func main() {
 	}
 
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	//init database
 	err = models.NewDB(bc.Data.Database.Source)
+	//init repo path
+	define.RepoPath = bc.Server.RepoPath
+
 	if err != nil {
 		panic(err)
 	}

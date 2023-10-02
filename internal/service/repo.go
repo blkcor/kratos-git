@@ -3,10 +3,14 @@ package service
 import (
 	"context"
 	"errors"
+	"gorm.io/gorm"
+	pb "kratos-git/api/git"
+	"kratos-git/define"
 	"kratos-git/helper"
 	"kratos-git/models"
-
-	pb "kratos-git/api/git"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
 type RepoService struct {
@@ -59,10 +63,25 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		Path:     req.Path,
 		Type:     int(req.Type),
 	}
-	err = models.DB.Model(&models.RepoBasic{}).Create(&repo).Error
-	if err != nil {
-		return nil, err
-	}
+	//创建仓库和创建文件夹放在一个事务里面
+	models.DB.Transaction(func(tx *gorm.DB) error {
+		err = models.DB.Model(&models.RepoBasic{}).Create(&repo).Error
+		if err != nil {
+			return err
+		}
+		//创建仓库文件夹
+		gitPath := define.RepoPath + string(filepath.Separator) + req.Path
+		err = os.MkdirAll(gitPath, 0755)
+		if err != nil {
+			return err
+		}
+		//git init --bare
+		err = exec.Command("/bin/bash", "-c", "cd "+gitPath+";"+"git init --bare").Run()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	return &pb.CreateRepoReply{
 		Identity: repo.Identity,
 		Name:     repo.Name,
