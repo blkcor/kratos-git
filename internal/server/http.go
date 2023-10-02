@@ -17,7 +17,7 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
-			selector.Server(middleware.Auth()).Path("/api.git.User/Login").Build(),
+			selector.Server(middleware.Auth()).Regex("/api.git/*").Build(),
 		),
 	}
 	if c.Http.Network != "" {

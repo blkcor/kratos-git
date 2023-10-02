@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package api.git;
+
+import "google/api/annotations.proto";
+
+option go_package = "kratos-git/api/git;git";
+option java_multiple_files = true;
+option java_package = "api.git";
+
+service Repo {
+  rpc ListRepo (ListRepoRequest) returns (ListRepoReply){
+    option (google.api.http) = {
+      get: "/repo/list"
+    };
+  }
+}
+
+message ListRepoRequest {
+  int32 page = 1;
+  int32 size = 2;
+}
+message ListRepoReply {
+  int64 cnt = 1;
+  repeated ListRepoItem list = 2;
+}
+
+message ListRepoItem{
+  string identity = 1;
+  string name = 2;
+  string desc = 3;
+  string path = 4;
+  int32 star = 5;
+}
