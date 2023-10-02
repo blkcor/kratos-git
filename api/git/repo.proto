@@ -20,6 +20,13 @@ service Repo {
       body:"*"
     };
   }
+
+  rpc UpdateRepo (UpdateRepoRequest) returns (UpdateRepoReply){
+    option (google.api.http) = {
+      put: "/repo",
+      body:"*"
+    };
+  }
 }
 
 message ListRepoRequest {
@@ -43,6 +50,7 @@ message CreateRepoRequest{
   string name = 1;
   string desc = 2;
   string path = 3;
+  int32 type = 4;
 }
 
 message CreateRepoReply{
@@ -52,3 +60,12 @@ message CreateRepoReply{
   string path = 4;
   int32 star = 5;
 }
+
+message UpdateRepoRequest{
+  string identity = 1;
+  string name = 2;
+  string desc = 3;
+  int32 type = 4;
+}
+
+message UpdateRepoReply{}

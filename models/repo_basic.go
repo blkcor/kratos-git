@@ -10,6 +10,7 @@ type RepoBasic struct {
 	Desc     string `gorm:"column:desc;type:varchar(255)" json:"desc"`
 	Star     int    `gorm:"column:star;type:int(11);default:0" json:"star"`
 	Path     string `gorm:"column:path;type:varchar(255);not null;unique;comment:仓库路径" json:"path"`
+	Type     int    `gorm:"column:type;type:int(11);comment:仓库类型(0：私有；1:公有)" json:"type"`
 }
 
 func (table *RepoBasic) TableName() string {

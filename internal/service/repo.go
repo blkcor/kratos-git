@@ -57,6 +57,7 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		Name:     req.Name,
 		Desc:     req.Desc,
 		Path:     req.Path,
+		Type:     int(req.Type),
 	}
 	err = models.DB.Model(&models.RepoBasic{}).Create(&repo).Error
 	if err != nil {
@@ -69,4 +70,16 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		Desc:     repo.Desc,
 		Path:     repo.Path,
 	}, nil
+}
+
+func (s *RepoService) UpdateRepo(ctx context.Context, req *pb.UpdateRepoRequest) (*pb.UpdateRepoReply, error) {
+	err := models.DB.Model(&models.RepoBasic{}).Where("identity = ?", req.Identity).Updates(map[string]interface{}{
+		"name": req.Name,
+		"desc": req.Desc,
+		"type": req.Type,
+	}).Error
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UpdateRepoReply{}, nil
 }

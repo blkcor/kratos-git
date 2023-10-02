@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Repo_ListRepo_FullMethodName   = "/api.git.Repo/ListRepo"
 	Repo_CreateRepo_FullMethodName = "/api.git.Repo/CreateRepo"
+	Repo_UpdateRepo_FullMethodName = "/api.git.Repo/UpdateRepo"
 )
 
 // RepoClient is the client API for Repo service.
@@ -29,6 +30,7 @@ const (
 type RepoClient interface {
 	ListRepo(ctx context.Context, in *ListRepoRequest, opts ...grpc.CallOption) (*ListRepoReply, error)
 	CreateRepo(ctx context.Context, in *CreateRepoRequest, opts ...grpc.CallOption) (*CreateRepoReply, error)
+	UpdateRepo(ctx context.Context, in *UpdateRepoRequest, opts ...grpc.CallOption) (*UpdateRepoReply, error)
 }
 
 type repoClient struct {
@@ -57,12 +59,22 @@ func (c *repoClient) CreateRepo(ctx context.Context, in *CreateRepoRequest, opts
 	return out, nil
 }
 
+func (c *repoClient) UpdateRepo(ctx context.Context, in *UpdateRepoRequest, opts ...grpc.CallOption) (*UpdateRepoReply, error) {
+	out := new(UpdateRepoReply)
+	err := c.cc.Invoke(ctx, Repo_UpdateRepo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RepoServer is the server API for Repo service.
 // All implementations must embed UnimplementedRepoServer
 // for forward compatibility
 type RepoServer interface {
 	ListRepo(context.Context, *ListRepoRequest) (*ListRepoReply, error)
 	CreateRepo(context.Context, *CreateRepoRequest) (*CreateRepoReply, error)
+	UpdateRepo(context.Context, *UpdateRepoRequest) (*UpdateRepoReply, error)
 	mustEmbedUnimplementedRepoServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedRepoServer) ListRepo(context.Context, *ListRepoRequest) (*Lis
 }
 func (UnimplementedRepoServer) CreateRepo(context.Context, *CreateRepoRequest) (*CreateRepoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRepo not implemented")
+}
+func (UnimplementedRepoServer) UpdateRepo(context.Context, *UpdateRepoRequest) (*UpdateRepoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRepo not implemented")
 }
 func (UnimplementedRepoServer) mustEmbedUnimplementedRepoServer() {}
 
@@ -125,6 +140,24 @@ func _Repo_CreateRepo_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Repo_UpdateRepo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRepoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RepoServer).UpdateRepo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Repo_UpdateRepo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RepoServer).UpdateRepo(ctx, req.(*UpdateRepoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Repo_ServiceDesc is the grpc.ServiceDesc for Repo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Repo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateRepo",
 			Handler:    _Repo_CreateRepo_Handler,
+		},
+		{
+			MethodName: "UpdateRepo",
+			Handler:    _Repo_UpdateRepo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
