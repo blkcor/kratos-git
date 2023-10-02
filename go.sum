@@ -1,3 +1,7 @@
+github.com/asim/git-http-backend v0.3.0 h1:jGlnxcYUbK0hmzg/4A/KCzZSDvwzjjI3XxWzD1zUVag=
+github.com/asim/git-http-backend v0.3.0/go.mod h1:xHP8hU2RZS1aW6tkn+v/bmF2Dxll2XYp3KygCVI24GQ=
+github.com/asim/git-http-backend v0.3.1-0.20221124063116-c60c6717525f h1:i/vd4QHrihq3PhgBLypmwtpBku+0uOVJ87h9lY4B3+A=
+github.com/asim/git-http-backend v0.3.1-0.20221124063116-c60c6717525f/go.mod h1:xHP8hU2RZS1aW6tkn+v/bmF2Dxll2XYp3KygCVI24GQ=
 github.com/census-instrumentation/opencensus-proto v0.4.1 h1:iKLQ0xPNFxR/2hzXZMrBo8f1j86j5WHzznCCQxV/b8g=
 github.com/cncf/xds/go v0.0.0-20230607035331-e9ce68804cb4 h1:/inchEIKaYC1Akx+H+gqO04wryn5h75LSazbRlnya1k=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

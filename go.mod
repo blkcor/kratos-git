@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/asim/git-http-backend v0.3.1-0.20221124063116-c60c6717525f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect

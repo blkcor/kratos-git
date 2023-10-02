@@ -64,7 +64,7 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		Type:     int(req.Type),
 	}
 	//创建仓库和创建文件夹放在一个事务里面
-	models.DB.Transaction(func(tx *gorm.DB) error {
+	err = models.DB.Transaction(func(tx *gorm.DB) error {
 		err = models.DB.Model(&models.RepoBasic{}).Create(&repo).Error
 		if err != nil {
 			return err
@@ -82,6 +82,9 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	return &pb.CreateRepoReply{
 		Identity: repo.Identity,
 		Name:     repo.Name,
