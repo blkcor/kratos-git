@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-kratos/kratos/v2/metadata"
 	"kratos-git/helper"
 	"kratos-git/models"
 
@@ -17,6 +19,10 @@ func NewUserService() *UserService {
 }
 
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginReply, error) {
+	if meta, ok := metadata.FromServerContext(ctx); ok {
+		fmt.Println("username:", meta.Get("username"))
+		fmt.Println("identity:", meta.Get("identity"))
+	}
 	ub := models.UserBasic{}
 	err := models.DB.Where("username = ? AND password = ?", req.Username, helper.GetMd5(req.Password)).Find(ub).Error
 	if err != nil {
