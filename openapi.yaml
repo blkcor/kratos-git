@@ -53,6 +53,28 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Repo
+            operationId: Repo_DeleteRepo
+            parameters:
+                - name: identity
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteRepoReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /repos:
         get:
             tags:
@@ -110,6 +132,9 @@ components:
                 type:
                     type: integer
                     format: int32
+        DeleteRepoReply:
+            type: object
+            properties: {}
         GoogleProtobufAny:
             type: object
             properties:

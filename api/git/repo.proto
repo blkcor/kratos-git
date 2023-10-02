@@ -21,6 +21,12 @@ service Repo {
     };
   }
 
+  rpc DeleteRepo (DeleteRepoRequest) returns (DeleteRepoReply){
+    option (google.api.http) = {
+      delete: "/repo"
+    };
+  }
+
   rpc UpdateRepo (UpdateRepoRequest) returns (UpdateRepoReply){
     option (google.api.http) = {
       put: "/repo",
@@ -69,3 +75,9 @@ message UpdateRepoRequest{
 }
 
 message UpdateRepoReply{}
+
+message DeleteRepoRequest{
+  string identity = 1;
+}
+
+message DeleteRepoReply{}

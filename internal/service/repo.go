@@ -105,3 +105,31 @@ func (s *RepoService) UpdateRepo(ctx context.Context, req *pb.UpdateRepoRequest)
 	}
 	return &pb.UpdateRepoReply{}, nil
 }
+
+func (s *RepoService) DeleteRepo(ctx context.Context, req *pb.DeleteRepoRequest) (*pb.DeleteRepoReply, error) {
+	//1、获取repo信息
+	var repo = &models.RepoBasic{}
+	err := models.DB.Model(&models.RepoBasic{}).Where("identity = ?", req.Identity).First(repo).Error
+	if err != nil {
+		return nil, err
+	}
+	//2、删除repo
+	err = models.DB.Transaction(func(tx *gorm.DB) error {
+		//1.1、删除仓库
+		gitPath := define.RepoPath + string(filepath.Separator) + repo.Path
+		err = os.RemoveAll(gitPath)
+		if err != nil {
+			return err
+		}
+		//1.2、删除db
+		err = tx.Where("identity = ?", req.Identity).Delete(&models.RepoBasic{}).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &pb.DeleteRepoReply{}, nil
+}

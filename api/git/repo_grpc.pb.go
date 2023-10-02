@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Repo_ListRepo_FullMethodName   = "/api.git.Repo/ListRepo"
 	Repo_CreateRepo_FullMethodName = "/api.git.Repo/CreateRepo"
+	Repo_DeleteRepo_FullMethodName = "/api.git.Repo/DeleteRepo"
 	Repo_UpdateRepo_FullMethodName = "/api.git.Repo/UpdateRepo"
 )
 
@@ -30,6 +31,7 @@ const (
 type RepoClient interface {
 	ListRepo(ctx context.Context, in *ListRepoRequest, opts ...grpc.CallOption) (*ListRepoReply, error)
 	CreateRepo(ctx context.Context, in *CreateRepoRequest, opts ...grpc.CallOption) (*CreateRepoReply, error)
+	DeleteRepo(ctx context.Context, in *DeleteRepoRequest, opts ...grpc.CallOption) (*DeleteRepoReply, error)
 	UpdateRepo(ctx context.Context, in *UpdateRepoRequest, opts ...grpc.CallOption) (*UpdateRepoReply, error)
 }
 
@@ -59,6 +61,15 @@ func (c *repoClient) CreateRepo(ctx context.Context, in *CreateRepoRequest, opts
 	return out, nil
 }
 
+func (c *repoClient) DeleteRepo(ctx context.Context, in *DeleteRepoRequest, opts ...grpc.CallOption) (*DeleteRepoReply, error) {
+	out := new(DeleteRepoReply)
+	err := c.cc.Invoke(ctx, Repo_DeleteRepo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *repoClient) UpdateRepo(ctx context.Context, in *UpdateRepoRequest, opts ...grpc.CallOption) (*UpdateRepoReply, error) {
 	out := new(UpdateRepoReply)
 	err := c.cc.Invoke(ctx, Repo_UpdateRepo_FullMethodName, in, out, opts...)
@@ -74,6 +85,7 @@ func (c *repoClient) UpdateRepo(ctx context.Context, in *UpdateRepoRequest, opts
 type RepoServer interface {
 	ListRepo(context.Context, *ListRepoRequest) (*ListRepoReply, error)
 	CreateRepo(context.Context, *CreateRepoRequest) (*CreateRepoReply, error)
+	DeleteRepo(context.Context, *DeleteRepoRequest) (*DeleteRepoReply, error)
 	UpdateRepo(context.Context, *UpdateRepoRequest) (*UpdateRepoReply, error)
 	mustEmbedUnimplementedRepoServer()
 }
@@ -87,6 +99,9 @@ func (UnimplementedRepoServer) ListRepo(context.Context, *ListRepoRequest) (*Lis
 }
 func (UnimplementedRepoServer) CreateRepo(context.Context, *CreateRepoRequest) (*CreateRepoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRepo not implemented")
+}
+func (UnimplementedRepoServer) DeleteRepo(context.Context, *DeleteRepoRequest) (*DeleteRepoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRepo not implemented")
 }
 func (UnimplementedRepoServer) UpdateRepo(context.Context, *UpdateRepoRequest) (*UpdateRepoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRepo not implemented")
@@ -140,6 +155,24 @@ func _Repo_CreateRepo_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Repo_DeleteRepo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRepoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RepoServer).DeleteRepo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Repo_DeleteRepo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RepoServer).DeleteRepo(ctx, req.(*DeleteRepoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Repo_UpdateRepo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRepoRequest)
 	if err := dec(in); err != nil {
@@ -172,6 +205,10 @@ var Repo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateRepo",
 			Handler:    _Repo_CreateRepo_Handler,
+		},
+		{
+			MethodName: "DeleteRepo",
+			Handler:    _Repo_DeleteRepo_Handler,
 		},
 		{
 			MethodName: "UpdateRepo",
