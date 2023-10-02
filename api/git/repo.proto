@@ -11,7 +11,13 @@ option java_package = "api.git";
 service Repo {
   rpc ListRepo (ListRepoRequest) returns (ListRepoReply){
     option (google.api.http) = {
-      get: "/repo/list"
+      get: "/repos"
+    };
+  }
+  rpc CreateRepo (CreateRepoRequest) returns (CreateRepoReply){
+    option (google.api.http) = {
+      post: "/repo",
+      body:"*"
     };
   }
 }
@@ -26,6 +32,20 @@ message ListRepoReply {
 }
 
 message ListRepoItem{
+  string identity = 1;
+  string name = 2;
+  string desc = 3;
+  string path = 4;
+  int32 star = 5;
+}
+
+message CreateRepoRequest{
+  string name = 1;
+  string desc = 2;
+  string path = 3;
+}
+
+message CreateRepoReply{
   string identity = 1;
   string name = 2;
   string desc = 3;
