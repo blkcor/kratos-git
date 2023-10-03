@@ -205,7 +205,7 @@ func (s *RepoService) RepoAuth(ctx context.Context, req *pb.RepoAuthRequest) (*p
 	err = models.DB.Model(&models.RepoUser{}).Create(&models.RepoUser{
 		Uid:  int(userAuth.ID),
 		Rid:  int(repo.ID),
-		Type: repo.Type,
+		Type: 2,
 	}).Error
 	if err != nil {
 		return nil, err
