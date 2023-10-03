@@ -70,6 +70,7 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 
 	//创建仓库
 	repo := models.RepoBasic{
+		Uid:      int(ub.ID),
 		Identity: helper.GetUUID(),
 		Name:     req.Name,
 		Desc:     req.Desc,
