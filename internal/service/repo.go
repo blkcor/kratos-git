@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/go-kratos/kratos/v2/metadata"
 	"gorm.io/gorm"
 	pb "kratos-git/api/git"
 	"kratos-git/define"
@@ -45,9 +46,21 @@ func (s *RepoService) ListRepo(ctx context.Context, req *pb.ListRepoRequest) (*p
 }
 
 func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest) (*pb.CreateRepoReply, error) {
+	md, exit := metadata.FromServerContext(ctx)
+	if !exit {
+		return nil, errors.New("no auth!")
+	}
+	identity := md.Get("identity")
+	//查询用户的基本信息
+	var ub models.UserBasic
+	err := models.DB.Model(&models.UserBasic{}).Where("identity = ?", identity).First(&ub).Error
+	if err != nil {
+		return nil, err
+	}
+
 	//查询仓库是否存在
 	var cnt int64 = 0
-	err := models.DB.Model(&models.RepoBasic{}).Where("path = ?", req.Path).Count(&cnt).Error
+	err = models.DB.Model(&models.RepoBasic{}).Where("path = ?", req.Path).Count(&cnt).Error
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +93,19 @@ func (s *RepoService) CreateRepo(ctx context.Context, req *pb.CreateRepoRequest)
 		if err != nil {
 			return err
 		}
+
+		//信息入RepoUser表
+		err = models.DB.Model(&models.RepoUser{}).Create(&models.RepoUser{
+			Uid:  int(ub.ID),
+			Rid:  int(repo.ID),
+			Type: repo.Type,
+		}).Error
+		if err != nil {
+			return err
+		}
 		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -132,4 +156,58 @@ func (s *RepoService) DeleteRepo(ctx context.Context, req *pb.DeleteRepoRequest)
 		return nil, err
 	}
 	return &pb.DeleteRepoReply{}, nil
+}
+
+func (s *RepoService) RepoAuth(ctx context.Context, req *pb.RepoAuthRequest) (*pb.RepoAuthReply, error) {
+	//获取当前用户信息
+	md, exit := metadata.FromServerContext(ctx)
+	if !exit {
+		return nil, errors.New("no auth!")
+	}
+	var ub = &models.UserBasic{}
+	err := models.DB.Model(&models.UserBasic{}).Where("identity = ?", md.Get("identity")).First(ub).Error
+	if err != nil {
+		return nil, err
+	}
+	//获取被授权用户信息
+	var userAuth = &models.UserBasic{}
+	err = models.DB.Model(&models.UserBasic{}).Where("identity = ?", req.UserIdentity).First(userAuth).Error
+	if err != nil {
+		return nil, err
+	}
+	//获取仓库信息
+	var repo = &models.RepoBasic{}
+	err = models.DB.Model(&models.RepoBasic{}).Where("identity = ?", req.RepoIdentity).First(repo).Error
+	if err != nil {
+		return nil, err
+	}
+	//查询当前用户权限
+	var cnt int64
+	err = models.DB.Model(&models.RepoUser{}).Where("uid = ? AND rid = ? AND type = 1", ub.ID, repo.ID).Count(&cnt).Error
+	if err != nil {
+		return nil, err
+	}
+	if cnt == 0 {
+		return nil, errors.New("非法操作！")
+	}
+
+	//判断被授权用户是否已经有权限
+	err = models.DB.Model(&models.RepoUser{}).Where("uid = ? AND rid = ?", userAuth.ID, repo.ID).Count(&cnt).Error
+	if err != nil {
+		return nil, err
+	}
+	//有权限 直接返回
+	if cnt > 0 {
+		return &pb.RepoAuthReply{}, nil
+	}
+	//无权限 入db
+	err = models.DB.Model(&models.RepoUser{}).Create(&models.RepoUser{
+		Uid:  int(userAuth.ID),
+		Rid:  int(repo.ID),
+		Type: repo.Type,
+	}).Error
+	if err != nil {
+		return nil, err
+	}
+	return &pb.RepoAuthReply{}, nil
 }

@@ -75,6 +75,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /repo/auth:
+        post:
+            tags:
+                - Repo
+            operationId: Repo_RepoAuth
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RepoAuthRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RepoAuthReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /repos:
         get:
             tags:
@@ -166,6 +190,16 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ListRepoItem'
+        RepoAuthReply:
+            type: object
+            properties: {}
+        RepoAuthRequest:
+            type: object
+            properties:
+                userIdentity:
+                    type: string
+                repoIdentity:
+                    type: string
         Status:
             type: object
             properties:

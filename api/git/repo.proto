@@ -33,6 +33,13 @@ service Repo {
       body:"*"
     };
   }
+
+  rpc RepoAuth (RepoAuthRequest) returns (RepoAuthReply){
+    option (google.api.http) = {
+      post: "/repo/auth",
+      body:"*"
+    };
+  }
 }
 
 message ListRepoRequest {
@@ -81,3 +88,10 @@ message DeleteRepoRequest{
 }
 
 message DeleteRepoReply{}
+
+message RepoAuthRequest{
+  string user_identity = 1;
+  string repo_identity = 2;
+}
+
+message RepoAuthReply{}
